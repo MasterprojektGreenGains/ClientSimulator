@@ -47,7 +47,7 @@ client.on("connect", () => {
         toSend.message.timestamp = new Date().toISOString();
 
         // MQTT-Nachricht senden
-        client.publish(topic, JSON.stringify(toSend), { qos: 1 }, (error) => {
+        client.publish(topic, JSON.stringify(toSend), { qos: 0 }, (error) => {
           if (error) {
             console.error("Fehler beim Senden:", error);
           } else {
