@@ -1,9 +1,7 @@
 const fs = require("fs");
+const mqtt = require("mqtt");
 const bigJson = require("big-json");
-const https = require("https");
-const axios = require("axios").default;
 
-// Funktion zum Parsen einer großen JSON-Datei
 function parseLargeJsonFile(filePath) {
   return new Promise((resolve, reject) => {
     const readStream = fs.createReadStream(filePath);
@@ -21,38 +19,11 @@ function parseLargeJsonFile(filePath) {
   });
 }
 
-const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+const brokerUrl = "mqtt://localhost:1883";
+const topic = "sensor/clientsimulator";
 
-data = null;
-i = 0;
-url = "https://localhost:5050/api/Test";
+const client = mqtt.connect(brokerUrl);
 
-// Verwendung der Funktion
-parseLargeJsonFile("./mqtt_messages_2.json")
-  .then((jsonData) => {
-    console.log("JSON erfolgreich geparst");
-    data = jsonData;
-
-    setInterval(() => {
-      toSend = data[i];
-      toSend.message.timestamp = new Date().toISOString();
-      console.log("Sending data: ", data[i]);
-
-      axios
-        .post(url, toSend, {
-          headers: { "Content-Type": "application/json" },
-          httpsAgent: httpsAgent,
-        })
-        .then((res) => {
-          console.log(`statusCode: ${res.status}`);
-        })
-        .catch((error) => {
-          console.error("Fehler:", error);
-        });
-
-      i++;
-    }, 5000);
-  })
-  .catch((error) => {
-    console.error("Fehler:", error);
-  });
+client.on("connect", () => {
+  client.publish("sensor/data/clientsimulator", "Hello MQTT");
+});
