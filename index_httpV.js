@@ -1,25 +1,9 @@
+import { parseLargeJsonFile } from "./parseLargeJson";
+
 const fs = require("fs");
 const bigJson = require("big-json");
 const https = require("https");
 const axios = require("axios").default;
-
-// Funktion zum Parsen einer großen JSON-Datei
-function parseLargeJsonFile(filePath) {
-  return new Promise((resolve, reject) => {
-    const readStream = fs.createReadStream(filePath);
-    const parseStream = bigJson.createParseStream();
-
-    readStream.pipe(parseStream);
-
-    parseStream.on("data", (jsonData) => {
-      resolve(jsonData); // Sobald die Datei vollständig geparst ist
-    });
-
-    parseStream.on("error", (error) => {
-      reject(`JSON Parsing Error: ${error}`);
-    });
-  });
-}
 
 const httpsAgent = new https.Agent({ rejectUnauthorized: false });
 
